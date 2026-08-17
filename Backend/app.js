@@ -1,0 +1,11 @@
+const express = require("express");
+const cors = require("cors");
+const app = express();
+const health = require("./routes/health.routes");
+const authRouter = require("./routes/auth.routes");
+const resumeRouter = require("./routes/resume.routes");
+app.use(express.json());
+app.use(cors());
+app.use("/api/auth",authRouter);
+app.use("/api/resume",resumeRouter);
+module.exports = app;
