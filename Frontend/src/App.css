@@ -251,6 +251,7 @@ button {
 /* ================= DASHBOARD ================= */
 
 .dashboard {
+  width: 100%;
   min-height: calc(100vh - 76px);
   padding: 60px 7%;
 }
@@ -281,6 +282,7 @@ button {
 }
 
 .upload-card {
+  width: 100%;
   margin-top: 45px;
   min-height: 380px;
   display: flex;
@@ -355,7 +357,163 @@ button {
   line-height: 1.6;
 }
 
+/* ================= AI ANALYSIS ================= */
+
+.analysis-result {
+  width: 100%;
+  max-width: 1150px;
+  margin: 50px auto 0;
+  padding: 40px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(168, 85, 247, 0.22);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.analysis-header {
+  margin-bottom: 30px;
+}
+
+.analysis-header h2 {
+  margin: 10px 0 0;
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+/* SCORE CARDS */
+
+.score-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.score-card {
+  min-width: 0;
+  padding: 28px 20px;
+  border-radius: 20px;
+  background: linear-gradient(
+    145deg,
+    rgba(168, 85, 247, 0.10),
+    rgba(255, 255, 255, 0.035)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  text-align: center;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.score-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.score-card span {
+  display: block;
+  margin-bottom: 14px;
+  color: #a7a7b5;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.score-card strong {
+  display: inline-block;
+  font-size: 56px;
+  line-height: 1;
+  font-weight: 800;
+  background: linear-gradient(135deg, #c084fc, #f472b6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.score-card small {
+  display: inline-block;
+  margin-left: 5px;
+  color: #777789;
+  font-size: 14px;
+}
+
+/* ANALYSIS SECTIONS */
+
+.analysis-section {
+  margin-top: 24px;
+  padding: 26px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.analysis-section h3 {
+  margin: 0 0 14px;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.analysis-section p {
+  margin: 0;
+  color: #a7a7b5;
+  line-height: 1.75;
+}
+
+.analysis-section ul {
+  margin: 0;
+  padding-left: 22px;
+  color: #c3c3cf;
+  line-height: 1.8;
+}
+
+.analysis-section li + li {
+  margin-top: 6px;
+}
+
+/* SKILL TAGS */
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-tag,
+.gap-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.skill-tag {
+  color: #d8b4fe;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.18);
+}
+
+.gap-tag {
+  color: #f9a8d4;
+  background: rgba(244, 114, 182, 0.09);
+  border: 1px solid rgba(244, 114, 182, 0.14);
+}
+
 /* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-result {
+    padding: 25px;
+  }
+}
 
 @media (max-width: 800px) {
   .nav-links a {
@@ -377,5 +535,439 @@ button {
 
   .dashboard-top {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .analysis-result {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .analysis-header h2 {
+    font-size: 28px;
+  }
+
+  .score-card strong {
+    font-size: 46px;
+  }
+
+  .analysis-section {
+    padding: 20px;
+  }
+}
+
+/* ================= ROAST MODE ENTRY ================= */
+
+.roast-entry {
+  width: 100%;
+  margin-top: 35px;
+  padding: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+
+  border-radius: 24px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.10),
+    rgba(168, 85, 247, 0.08)
+  );
+
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.roast-entry-content {
+  max-width: 700px;
+}
+
+.roast-entry h2 {
+  margin: 12px 0;
+  font-size: 32px;
+}
+
+.roast-entry p {
+  color: #a7a7b5;
+  line-height: 1.7;
+}
+
+.roast-entry-icon {
+  font-size: 80px;
+}
+
+.roast-btn {
+  margin-top: 12px;
+  padding: 13px 20px;
+
+  border: none;
+  border-radius: 10px;
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    #dc2626,
+    #f97316
+  );
+
+  font-weight: 700;
+}
+
+.roast-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ================= ROAST PAGE ================= */
+
+.roast-page {
+  width: 100%;
+  min-height: calc(100vh - 76px);
+  padding: 40px 5vw 80px;
+
+  background: radial-gradient(
+    circle at 50% 15%,
+    rgba(239, 68, 68, 0.16),
+    transparent 38%
+  );
+
+  overflow-x: hidden;
+}
+
+.back-btn {
+  border: none;
+  background: transparent;
+  color: #a7a7b5;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.back-btn:hover {
+  color: #ffffff;
+}
+
+.roast-hero {
+  width: 100%;
+  max-width: 1200px;
+  margin: 70px auto 60px;
+  text-align: center;
+}
+
+.roast-badge {
+  display: inline-block;
+  color: #fb7185;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.roast-hero h1 {
+  margin: 22px auto;
+  font-size: clamp(52px, 7vw, 100px);
+  line-height: 0.98;
+  letter-spacing: -5px;
+  font-weight: 800;
+}
+
+.roast-hero h1 span {
+  color: #fb7185;
+}
+
+.roast-hero p {
+  width: 100%;
+  max-width: 850px;
+  margin: 30px auto 0;
+  color: #9f9fad;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+/* ================= ROAST SETTINGS ================= */
+
+.roast-settings {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 45px;
+
+  border-radius: 28px;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+
+  text-align: center;
+}
+
+.roast-settings h2 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.roast-description {
+  margin: 12px 0 0;
+  color: #8f8f9f;
+  font-size: 16px;
+}
+
+.roast-levels {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 35px;
+}
+
+.roast-level {
+  min-height: 190px;
+  padding: 28px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
+  color: white;
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.roast-level:hover {
+  transform: translateY(-5px);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.roast-level > span {
+  font-size: 40px;
+}
+
+.roast-level strong {
+  font-size: 22px;
+}
+
+.roast-level small {
+  color: #8f8f9f;
+  font-size: 14px;
+}
+
+.roast-level.active {
+  border-color: rgba(239, 68, 68, 0.65);
+  background: rgba(239, 68, 68, 0.11);
+  box-shadow: 0 15px 40px rgba(239, 68, 68, 0.10);
+}
+
+.start-roast-btn {
+  margin-top: 35px;
+  padding: 16px 32px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #dc2626,
+    #f97316
+  );
+
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.start-roast-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(239, 68, 68, 0.25);
+}
+
+.start-roast-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ================= SELECTED RESUME ================= */
+
+.roast-file {
+  width: 100%;
+  max-width: 1400px;
+  margin: 28px auto 0;
+  padding: 20px 24px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.roast-file > span {
+  font-size: 30px;
+}
+
+.roast-file small {
+  color: #fb7185;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.roast-file p {
+  margin: 5px 0 0;
+  color: #d0d0da;
+  font-size: 15px;
+}
+
+/* ================= ROAST RESULT ================= */
+
+.roast-result {
+  width: 100%;
+  max-width: 1400px;
+  margin: 35px auto 0;
+  padding: 40px;
+
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+}
+
+.roast-result-header {
+  margin-bottom: 28px;
+}
+
+.roast-result-header h2 {
+  margin: 12px 0 0;
+  font-size: 36px;
+}
+
+.roast-content {
+  width: 100%;
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #d8d8e3;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  font-size: 16px;
+  text-align: left;
+}
+
+.roast-error {
+  margin-top: 18px;
+  color: #fb7185;
+  font-size: 14px;
+}
+
+/* ================= LARGE DESKTOP ================= */
+
+@media (min-width: 1400px) {
+  .roast-page {
+    padding-left: 6vw;
+    padding-right: 6vw;
+  }
+
+  .roast-settings,
+  .roast-file,
+  .roast-result {
+    max-width: 1500px;
+  }
+
+  .roast-level {
+    min-height: 210px;
+  }
+}
+
+/* ================= ROAST TABLET ================= */
+
+@media (max-width: 1000px) {
+  .roast-levels {
+    grid-template-columns: 1fr;
+  }
+
+  .roast-settings {
+    padding: 30px;
+  }
+}
+
+/* ================= ROAST MOBILE ================= */
+
+@media (max-width: 800px) {
+  .roast-entry {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .roast-entry-icon {
+    display: none;
+  }
+
+  .roast-settings {
+    padding: 24px;
+  }
+
+  .roast-hero h1 {
+    letter-spacing: -2px;
+  }
+}
+
+@media (max-width: 600px) {
+  .roast-page {
+    padding: 30px 20px 60px;
+  }
+
+  .roast-hero {
+    margin: 50px auto 40px;
+  }
+
+  .roast-hero h1 {
+    font-size: clamp(42px, 12vw, 65px);
+    letter-spacing: -3px;
+  }
+
+  .roast-hero p {
+    font-size: 16px;
+  }
+
+  .roast-settings {
+    padding: 24px 18px;
+    border-radius: 20px;
+  }
+
+  .roast-settings h2 {
+    font-size: 26px;
+  }
+
+  .roast-level {
+    min-height: 150px;
+  }
+
+  .roast-result {
+    padding: 20px;
+  }
+
+  .roast-result-header h2 {
+    font-size: 28px;
+  }
+
+  .roast-content {
+    padding: 20px;
   }
 }
