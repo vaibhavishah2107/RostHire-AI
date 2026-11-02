@@ -1,10 +1,10 @@
 import { useState } from "react";
 import "./App.css";
 
-import Navbar from "./components/Navbar";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import ResumeUpload from "./components/ResumeUpload";
+import Navbar from "./components/navbar.jsx";
+import Login from "./components/login.jsx";
+import Register from "./components/register.jsx";
+import ResumeUpload from "./components/resumeUpload.jsx";
 
 function App() {
   const [page, setPage] = useState("home");
