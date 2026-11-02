@@ -209,7 +209,121 @@ ${resumeText}
 
     return response.text;
 }
+async function matchJob(resumeText, jobDescription) {
+
+    const response = await ai.models.generateContent({
+        model: "gemini-3.1-flash-lite",
+
+        contents: `
+You are RoastHire AI's job matching engine.
+
+Compare the candidate's resume with the provided job description.
+
+IMPORTANT RULES:
+
+- Use only information present in the resume and job description.
+- Do not invent experience, skills, education, certifications, or achievements.
+- Distinguish between:
+  1. matched skills
+  2. missing skills
+  3. matched requirements
+  4. unmet requirements
+- Consider semantic similarity, not only exact word matching.
+- A related skill can count as a match when the resume provides meaningful evidence.
+- Do not assume that listing a skill means the candidate has strong practical experience with it.
+- Match score must be an integer from 0 to 100.
+
+SCORING FRAMEWORK:
+
+Skills alignment: 40%
+Experience alignment: 20%
+Responsibilities alignment: 20%
+Education alignment: 10%
+Other requirements: 10%
+
+Return the analysis using this structure:
+
+{
+  "matchScore": number,
+  "matchedSkills": string[],
+  "missingSkills": string[],
+  "matchedRequirements": string[],
+  "unmetRequirements": string[],
+  "recommendations": string[]
+}
+
+RESUME:
+
+${resumeText}
+
+JOB DESCRIPTION:
+
+${jobDescription}
+        `,
+
+        config: {
+            responseMimeType: "application/json",
+
+            responseSchema: {
+                type: "object",
+
+                properties: {
+                    matchScore: {
+                        type: "integer",
+                    },
+
+                    matchedSkills: {
+                        type: "array",
+                        items: {
+                            type: "string",
+                        },
+                    },
+
+                    missingSkills: {
+                        type: "array",
+                        items: {
+                            type: "string",
+                        },
+                    },
+
+                    matchedRequirements: {
+                        type: "array",
+                        items: {
+                            type: "string",
+                        },
+                    },
+
+                    unmetRequirements: {
+                        type: "array",
+                        items: {
+                            type: "string",
+                        },
+                    },
+
+                    recommendations: {
+                        type: "array",
+                        items: {
+                            type: "string",
+                        },
+                    },
+                },
+
+                required: [
+                    "matchScore",
+                    "matchedSkills",
+                    "missingSkills",
+                    "matchedRequirements",
+                    "unmetRequirements",
+                    "recommendations",
+                ],
+            },
+        },
+    });
+
+    return JSON.parse(response.text);
+}
 module.exports = {
     analyzeResume,
-    roastResume
+    roastResume, 
+    matchJob,
 };

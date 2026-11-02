@@ -1,6 +1,7 @@
 const fs = require("fs").promises;
 const { PDFParse } = require("pdf-parse");
 const { analyzeResume } = require("../services/ai.service.js");
+const Resume = require("../models/resume");
 async function uploadResume(req, res) {
   try {
     console.log(req.file);
@@ -23,6 +24,12 @@ async function uploadResume(req, res) {
     });
 
     const cleanedText = cleanedLines.join("\n");
+    const savedResume = await Resume.create({
+  userId: req.user.id,
+  fileName: req.file.filename,
+  filePath: req.file.path,
+  extractedText: cleanedText,
+});
     const analysis = await analyzeResume(cleanedText);
 
     console.log("AI ANALYSIS:");
@@ -35,10 +42,10 @@ async function uploadResume(req, res) {
     console.log(cleanedText);
 
     return res.status(200).json({
-    success: true,
-    message: "Resume analyzed successfully.",
-    file: req.file.filename,
-    analysis: analysis,
+  success: true,
+  message: "Resume analyzed successfully.",
+  resumeId: savedResume._id,
+  analysis: analysis,
 });
   } catch (error) {
     console.log(error);

@@ -1,12 +1,15 @@
 import { useState } from "react";
 import RoastMode from "./RoastMode";
+import JobMatching from "./jobMatching.jsx";
 
 function ResumeUpload({ onLogout }) {
   const [resume, setResume] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [analysis, setAnalysis] = useState(null);
+
   const [showRoastMode, setShowRoastMode] = useState(false);
+  const [showJobMatching, setShowJobMatching] = useState(false);
 
   const handleUpload = async () => {
     if (!resume) {
@@ -60,12 +63,23 @@ function ResumeUpload({ onLogout }) {
     }
   };
 
-  // Show Roast Mode as a separate screen
+  // ================= ROAST MODE =================
+
   if (showRoastMode) {
     return (
       <RoastMode
         resume={resume}
         onBack={() => setShowRoastMode(false)}
+      />
+    );
+  }
+
+  // ================= JOB MATCHING =================
+
+  if (showJobMatching) {
+    return (
+      <JobMatching
+        onBack={() => setShowJobMatching(false)}
       />
     );
   }
@@ -155,6 +169,8 @@ function ResumeUpload({ onLogout }) {
 
       <div className="feature-grid">
 
+        {/* ATS SCORE */}
+
         <div className="feature-card">
           <span>◈</span>
 
@@ -168,6 +184,8 @@ function ResumeUpload({ onLogout }) {
           </p>
         </div>
 
+
+        {/* SKILL GAP */}
 
         <div className="feature-card">
           <span>✦</span>
@@ -183,6 +201,8 @@ function ResumeUpload({ onLogout }) {
         </div>
 
 
+        {/* RESUME ROAST */}
+
         <div className="feature-card">
           <span>🔥</span>
 
@@ -193,6 +213,25 @@ function ResumeUpload({ onLogout }) {
           <p>
             Get brutally honest AI feedback
             on your resume.
+          </p>
+        </div>
+
+
+        {/* JOB MATCHING */}
+
+        <div
+          className="feature-card feature-card-clickable"
+          onClick={() => setShowJobMatching(true)}
+        >
+          <span>🎯</span>
+
+          <h3>
+            Job Matching
+          </h3>
+
+          <p>
+            Compare your resume with a job description
+            and discover your compatibility.
           </p>
         </div>
 
@@ -241,6 +280,7 @@ function ResumeUpload({ onLogout }) {
       {/* ================= AI ANALYSIS ================= */}
 
       {analysis && (
+
         <div className="analysis-result">
 
           <div className="analysis-header">
@@ -256,12 +296,17 @@ function ResumeUpload({ onLogout }) {
           </div>
 
 
-          {/* SCORE CARDS */}
+          {/* ================= SCORE CARDS ================= */}
 
           <div className="score-grid">
 
+            {/* ATS SCORE */}
+
             <div className="score-card">
-              <span>ATS SCORE</span>
+
+              <span>
+                ATS SCORE
+              </span>
 
               <strong>
                 {analysis.atsScore}
@@ -270,11 +315,17 @@ function ResumeUpload({ onLogout }) {
               <small>
                 / 100
               </small>
+
             </div>
 
 
+            {/* RESUME QUALITY */}
+
             <div className="score-card">
-              <span>RESUME QUALITY</span>
+
+              <span>
+                RESUME QUALITY
+              </span>
 
               <strong>
                 {analysis.resumeQualityScore}
@@ -283,11 +334,17 @@ function ResumeUpload({ onLogout }) {
               <small>
                 / 100
               </small>
+
             </div>
 
 
+            {/* PLACEMENT READINESS */}
+
             <div className="score-card">
-              <span>PLACEMENT READINESS</span>
+
+              <span>
+                PLACEMENT READINESS
+              </span>
 
               <strong>
                 {analysis.placementReadinessScore}
@@ -296,12 +353,13 @@ function ResumeUpload({ onLogout }) {
               <small>
                 / 100
               </small>
+
             </div>
 
           </div>
 
 
-          {/* SUMMARY */}
+          {/* ================= SUMMARY ================= */}
 
           <div className="analysis-section">
 
@@ -316,7 +374,7 @@ function ResumeUpload({ onLogout }) {
           </div>
 
 
-          {/* STRENGTHS */}
+          {/* ================= STRENGTHS ================= */}
 
           <div className="analysis-section">
 
@@ -337,7 +395,7 @@ function ResumeUpload({ onLogout }) {
           </div>
 
 
-          {/* WEAKNESSES */}
+          {/* ================= WEAKNESSES ================= */}
 
           <div className="analysis-section">
 
@@ -358,7 +416,7 @@ function ResumeUpload({ onLogout }) {
           </div>
 
 
-          {/* SKILLS */}
+          {/* ================= SKILLS ================= */}
 
           <div className="analysis-section">
 
@@ -370,12 +428,14 @@ function ResumeUpload({ onLogout }) {
 
               {analysis.skills.map(
                 (skill, index) => (
+
                   <span
                     className="skill-tag"
                     key={index}
                   >
                     {skill}
                   </span>
+
                 )
               )}
 
@@ -384,7 +444,7 @@ function ResumeUpload({ onLogout }) {
           </div>
 
 
-          {/* SKILL GAPS */}
+          {/* ================= SKILL GAPS ================= */}
 
           <div className="analysis-section">
 
@@ -396,12 +456,14 @@ function ResumeUpload({ onLogout }) {
 
               {analysis.skillGaps.map(
                 (gap, index) => (
+
                   <span
                     className="gap-tag"
                     key={index}
                   >
                     {gap}
                   </span>
+
                 )
               )}
 
@@ -410,6 +472,7 @@ function ResumeUpload({ onLogout }) {
           </div>
 
         </div>
+
       )}
 
     </section>
