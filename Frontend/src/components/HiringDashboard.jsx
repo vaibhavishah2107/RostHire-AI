@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 
-const API_URL = "http://localhost:3000/api/jobs";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/jobs`;
 
 const initialForm = {
   title: "",

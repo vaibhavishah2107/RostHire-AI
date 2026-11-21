@@ -1,8 +1,10 @@
 
 import { useState } from "react";
 
-const JOBS_API = "http://localhost:3000/api/jobs";
-const MATCH_API = "http://localhost:3000/api/job/match";
+const API_URL = import.meta.env.VITE_API_URL;
+
+const JOBS_API = `${API_URL}/api/jobs`;
+const MATCH_API = `${API_URL}/api/job/match`;
 
 function CandidateJobs({ onBack }) {
   const [searchDescription, setSearchDescription] = useState("");
