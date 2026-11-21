@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import "./Navbar.css";
+import "./navbar.css";
 
 function Navbar({
   onLogin,
