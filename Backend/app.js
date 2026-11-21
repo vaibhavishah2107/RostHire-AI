@@ -8,7 +8,7 @@ const jobRouter = require("./routes/job.routes");
 const jobsRouter = require("./routes/job.routes");
 app.use(express.json());
 app.use(cors({
-  origin: ["http://localhost:5173", "https://rost-hire-ai.vercel.app"],
+  origin: ["http://localhost:5173", "https://rost-hire-ai.vercel.app", "https://roast-hire-ai.vercel.app" ],
   credentials: true
 }));
 app.use("/api/auth",authRouter);
