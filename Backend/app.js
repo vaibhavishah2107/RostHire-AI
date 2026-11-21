@@ -7,7 +7,10 @@ const resumeRouter = require("./routes/resume.routes");
 const jobRouter = require("./routes/job.routes");
 const jobsRouter = require("./routes/job.routes");
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://rost-hire-ai.vercel.app"],
+  credentials: true
+}));
 app.use("/api/auth",authRouter);
 app.use("/api/resume",resumeRouter);
 app.use("/api/job", jobRouter);
