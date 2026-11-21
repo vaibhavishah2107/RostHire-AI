@@ -1,4 +1,3 @@
-const fs = require("fs").promises;
 const { PDFParse } = require("pdf-parse");
 
 const { roastResume } = require("../services/ai.service");
@@ -23,10 +22,8 @@ async function roastResumeController(req, res) {
             });
         }
 
-        console.log("Roast level:", roastLevel);
-
-        // Read uploaded PDF
-        const data = await fs.readFile(req.file.path);
+        // With memory storage the PDF is in req.file.buffer, not on disk
+        const data = req.file.buffer;
 
         // Parse PDF
         const parser = new PDFParse({ data });
@@ -37,8 +34,6 @@ async function roastResumeController(req, res) {
             .replace(/\r\n/g, "\n")
             .replace(/\n{2,}/g, "\n")
             .trim();
-
-        console.log("Resume text extracted.");
 
         // Send resume text to Gemini
         const roast = await roastResume(text, roastLevel);

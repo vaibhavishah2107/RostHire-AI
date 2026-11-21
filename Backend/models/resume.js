@@ -13,9 +13,9 @@ const resumeSchema = new mongoose.Schema(
       required: true,
     },
 
+    // No longer used: files are kept in memory, not on disk
     filePath: {
       type: String,
-      required: true,
     },
 
     extractedText: {
