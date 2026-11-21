@@ -1,329 +1,675 @@
 const { GoogleGenAI } = require("@google/genai");
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
+const MODEL_NAME = "gemini-3.1-flash-lite";
+
+const stringArray = {
+  type: "array",
+  items: { type: "string" },
+};
+
+// =====================================================
+// COMMON GEMINI FUNCTION
+// =====================================================
+
+async function generateStructuredAnalysis(prompt, responseSchema) {
+  const response = await ai.models.generateContent({
+    model: MODEL_NAME,
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema,
+    },
+  });
+
+  if (!response.text) {
+    throw new Error("Gemini returned an empty response.");
+  }
+
+  try {
+    return JSON.parse(response.text);
+  } catch (error) {
+    console.error("Gemini JSON parsing error:", error.message);
+    throw new Error("AI returned an invalid response.");
+  }
+}
+
+// =====================================================
+// 1. GENERAL RESUME ANALYSIS
+// =====================================================
+
 async function analyzeResume(resumeText) {
-    const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
+  const responseSchema = {
+    type: "object",
+    properties: {
+      atsScore: { type: "integer" },
+      resumeQualityScore: { type: "integer" },
+      placementReadinessScore: { type: "integer" },
+      summary: { type: "string" },
+      strengths: stringArray,
+      weaknesses: stringArray,
+      skills: stringArray,
+      skillGaps: stringArray,
+    },
+    required: [
+      "atsScore",
+      "resumeQualityScore",
+      "placementReadinessScore",
+      "summary",
+      "strengths",
+      "weaknesses",
+      "skills",
+      "skillGaps",
+    ],
+  };
 
-        contents: `
-You are RoastHire AI, an expert resume evaluator for
-college students and early-career professionals.
+  return generateStructuredAnalysis(
+    `You are RoastHire AI, an expert resume evaluator.
 
-Analyze the resume using the following framework.
-
-IMPORTANT:
-- Use ONLY information present in the resume.
-- Do not invent skills, experience, projects, achievements,
-  certifications, internships, or education.
-- Scores must be integers from 0 to 100.
-- Be critical but fair.
-- Distinguish between listed skills and demonstrated skills.
+Analyze the resume using ONLY information present in it.
+Never invent skills, experience, achievements or qualifications.
 
 ATS SCORE:
-- Structure and section clarity: 20 points
-- Keyword and skill coverage: 25 points
-- Readability and formatting: 20 points
-- Experience/project relevance: 20 points
-- Action-oriented content: 15 points
+- Structure and section clarity: 20
+- Keyword and skill coverage: 25
+- Readability and formatting: 20
+- Project and experience relevance: 20
+- Action-oriented content: 15
 
 RESUME QUALITY SCORE:
-- Clarity and communication: 20 points
-- Specificity and evidence: 25 points
-- Consistency and organization: 20 points
-- Project/experience quality: 20 points
-- Professional presentation: 15 points
+- Clarity and communication: 20
+- Specificity and evidence: 25
+- Organization: 20
+- Project and experience quality: 20
+- Professional presentation: 15
 
 PLACEMENT READINESS SCORE:
-- Technical skill foundation: 30 points
-- Project strength: 25 points
-- Practical evidence: 20 points
-- Resume quality: 15 points
-- Profile completeness: 10 points
+- Technical skills: 30
+- Project strength: 25
+- Practical evidence: 20
+- Resume quality: 15
+- Profile completeness: 10
 
-Resume:
+All scores must be integers between 0 and 100.
 
-${resumeText}
-        `,
-
-        config: {
-            responseMimeType: "application/json",
-
-            responseSchema: {
-                type: "object",
-
-                properties: {
-                    atsScore: {
-                        type: "integer",
-                        description: "ATS score from 0 to 100",
-                    },
-
-                    resumeQualityScore: {
-                        type: "integer",
-                        description: "Resume quality score from 0 to 100",
-                    },
-
-                    placementReadinessScore: {
-                        type: "integer",
-                        description: "Placement readiness score from 0 to 100",
-                    },
-
-                    summary: {
-                        type: "string",
-                    },
-
-                    strengths: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-
-                    weaknesses: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-
-                    skills: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-
-                    skillGaps: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-                },
-
-                required: [
-                    "atsScore",
-                    "resumeQualityScore",
-                    "placementReadinessScore",
-                    "summary",
-                    "strengths",
-                    "weaknesses",
-                    "skills",
-                    "skillGaps",
-                ],
-            },
-        },
-    });
-
-    console.log("Raw Gemini response:");
-    console.log(response.text);
-
-    return JSON.parse(response.text);
+RESUME:
+${resumeText}`,
+    responseSchema
+  );
 }
+
+// =====================================================
+// 2. ROAST MODE
+// =====================================================
+
 async function roastResume(resumeText, roastLevel) {
-    let roastStyle = "";
+  let roastStyle = "";
 
-    if (roastLevel === "mild") {
-        roastStyle = `
+  if (roastLevel === "mild") {
+    roastStyle = `
 Be honest but gentle.
-Focus mainly on constructive criticism.
-Use light humor.
-Avoid harsh language.
-        `;
-    }
-
-    if (roastLevel === "brutal") {
-        roastStyle = `
+Use light humor and constructive criticism.
+`;
+  } else if (roastLevel === "brutal") {
+    roastStyle = `
 Be brutally honest and witty.
-roast the resume as a real comadian.
-be brutal, use harsh language.
-Point out weak claims, vague descriptions,
-unsupported skills, weak project descriptions,
-poor formatting, and missing evidence.
-Use sharp humor, but keep the feedback useful.
-        `;
-    }
+Use sharp humor.
+Point out weak skills, vague projects,
+unsupported claims and poor descriptions.
+`;
+  } else if (roastLevel === "nuclear") {
+    roastStyle = `
+Be extremely direct, savage and witty.
+Identify every weakness supported by the resume.
+Never attack the person's identity or personal traits.
+`;
+  } else {
+    throw new Error("Invalid roast level.");
+  }
 
-    if (roastLevel === "nuclear") {
-        roastStyle = `
-Be extremely direct, savage, and witty.
-the person should feel sad.
-be verry brutal, use harsh language.
-Call out every obvious weakness you can support
-from the resume.
-The tone can be ruthless and funny,
-but never attack the person's identity,
-appearance, intelligence, background, or other
-personal characteristics.
-Every criticism must be supported by the resume.
-        `;
-    }
+  const response = await ai.models.generateContent({
+    model: MODEL_NAME,
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
+    contents: `
+You are RoastHire AI Resume Roast Mode.
 
-        contents: `
-You are RoastHire AI's Resume Roast Mode.
-
-Your job is to roast the candidate's resume,
-not the candidate as a person.
+Your job is to roast the resume, not the candidate.
 
 ${roastStyle}
 
-IMPORTANT:
-- Use ONLY information present in the resume.
-- Do not invent experience, skills, projects, or achievements.
-- Do not make personal attacks.
-- Identify specific problems.
-- For every major criticism, explain what should be improved.
-- Make the response entertaining but genuinely useful.
+RULES:
+- Use only information in the resume.
+- Never invent achievements.
+- Explain why something is weak.
+- Give practical improvements.
+- Keep the feedback entertaining and useful.
 
-Structure your response like this:
+FORMAT:
 
-🔥 OVERALL ROAST
+1. OVERALL ROAST
 
-Give a short overall roast of the resume.
-
-🔥 BIGGEST PROBLEMS
-
+2. BIGGEST PROBLEMS
 Give 5 to 8 specific problems.
-For each one:
-1. What is wrong
-2. Why it is weak
-3. How to improve it
+Explain:
+- What is wrong
+- Why it is weak
+- How to improve it
 
-🔥 FINAL VERDICT
-
-Give a short final verdict and the top 3 things
-the candidate should fix first.
+3. FINAL VERDICT
+Give the top 3 improvements.
 
 ROAST LEVEL:
 ${roastLevel}
 
 RESUME:
 ${resumeText}
-        `,
-    });
+`,
+  });
 
-    return response.text;
+  if (!response.text) {
+    throw new Error("Gemini returned an empty roast.");
+  }
+
+  return response.text;
 }
+
+// =====================================================
+// 3. JOB MATCHING
+// =====================================================
+
 async function matchJob(resumeText, jobDescription) {
+  const responseSchema = {
+    type: "object",
+    properties: {
+      matchScore: { type: "integer" },
+      matchedSkills: stringArray,
+      missingSkills: stringArray,
+      matchedRequirements: stringArray,
+      unmetRequirements: stringArray,
+      recommendations: stringArray,
+    },
+    required: [
+      "matchScore",
+      "matchedSkills",
+      "missingSkills",
+      "matchedRequirements",
+      "unmetRequirements",
+      "recommendations",
+    ],
+  };
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite",
-
-        contents: `
+  return generateStructuredAnalysis(
+    `
 You are RoastHire AI's job matching engine.
 
-Compare the candidate's resume with the provided job description.
+Compare the resume with the job description.
 
-IMPORTANT RULES:
+RULES:
+- Use only provided information.
+- Do not invent qualifications.
+- Consider semantic similarity.
+- Distinguish listed skills from demonstrated skills.
 
-- Use only information present in the resume and job description.
-- Do not invent experience, skills, education, certifications, or achievements.
-- Distinguish between:
-  1. matched skills
-  2. missing skills
-  3. matched requirements
-  4. unmet requirements
-- Consider semantic similarity, not only exact word matching.
-- A related skill can count as a match when the resume provides meaningful evidence.
-- Do not assume that listing a skill means the candidate has strong practical experience with it.
-- Match score must be an integer from 0 to 100.
+SCORING:
+- Skills alignment: 40%
+- Experience alignment: 20%
+- Responsibilities: 20%
+- Education: 10%
+- Other requirements: 10%
 
-SCORING FRAMEWORK:
-
-Skills alignment: 40%
-Experience alignment: 20%
-Responsibilities alignment: 20%
-Education alignment: 10%
-Other requirements: 10%
-
-Return the analysis using this structure:
-
-{
-  "matchScore": number,
-  "matchedSkills": string[],
-  "missingSkills": string[],
-  "matchedRequirements": string[],
-  "unmetRequirements": string[],
-  "recommendations": string[]
-}
+Match score must be between 0 and 100.
 
 RESUME:
-
 ${resumeText}
 
 JOB DESCRIPTION:
-
 ${jobDescription}
-        `,
-
-        config: {
-            responseMimeType: "application/json",
-
-            responseSchema: {
-                type: "object",
-
-                properties: {
-                    matchScore: {
-                        type: "integer",
-                    },
-
-                    matchedSkills: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-
-                    missingSkills: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-
-                    matchedRequirements: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-
-                    unmetRequirements: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-
-                    recommendations: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-                },
-
-                required: [
-                    "matchScore",
-                    "matchedSkills",
-                    "missingSkills",
-                    "matchedRequirements",
-                    "unmetRequirements",
-                    "recommendations",
-                ],
-            },
-        },
-    });
-
-    return JSON.parse(response.text);
+`,
+    responseSchema
+  );
 }
+
+// =====================================================
+// 4. PROJECT STRENGTH ANALYZER
+// =====================================================
+
+async function analyzeProjectStrength(resumeText) {
+  const projectSchema = {
+    type: "object",
+    properties: {
+      projectName: { type: "string" },
+      strengthScore: { type: "integer" },
+      problemClarity: { type: "string" },
+      technicalDepth: { type: "string" },
+      implementationEvidence: { type: "string" },
+      ownershipEvidence: { type: "string" },
+      impactEvidence: { type: "string" },
+      strengths: stringArray,
+      weaknesses: stringArray,
+      improvementSuggestions: stringArray,
+    },
+    required: [
+      "projectName",
+      "strengthScore",
+      "problemClarity",
+      "technicalDepth",
+      "implementationEvidence",
+      "ownershipEvidence",
+      "impactEvidence",
+      "strengths",
+      "weaknesses",
+      "improvementSuggestions",
+    ],
+  };
+
+  const responseSchema = {
+    type: "object",
+    properties: {
+      overallScore: { type: "integer" },
+      assessmentStatus: { type: "string" },
+      overallAssessment: { type: "string" },
+      projects: {
+        type: "array",
+        items: projectSchema,
+      },
+      priorityImprovements: stringArray,
+      missingEvidence: stringArray,
+    },
+    required: [
+      "overallScore",
+      "assessmentStatus",
+      "overallAssessment",
+      "projects",
+      "priorityImprovements",
+      "missingEvidence",
+    ],
+  };
+
+  return generateStructuredAnalysis(
+    `
+You are RoastHire AI Project Strength Analyzer.
+
+Analyze every project explicitly described in the resume.
+
+Evaluate projects based on:
+
+1. Problem clarity and relevance: 20 points
+2. Technical depth: 25 points
+3. Implementation evidence: 25 points
+4. Candidate contribution: 15 points
+5. Impact and outcomes: 15 points
+
+IMPORTANT:
+- Do not invent project features.
+- Do not invent technologies or metrics.
+- Separate individual contribution from team achievement.
+- Give honest feedback.
+- Suggest improvements without encouraging fabricated achievements.
+
+If there are no projects, return:
+- overallScore: 0
+- assessmentStatus: insufficient_evidence
+- projects: []
+
+Scores must be between 0 and 100.
+
+RESUME:
+${resumeText}
+`,
+    responseSchema
+  );
+}
+
+// =====================================================
+// 5. FAKE SKILL DETECTION / SKILL EVIDENCE REVIEW
+// =====================================================
+
+async function detectUnsupportedSkills(resumeText) {
+  const skillSchema = {
+    type: "object",
+    properties: {
+      skill: { type: "string" },
+      evidenceLevel: { type: "string" },
+      confidence: { type: "integer" },
+      resumeEvidence: stringArray,
+      assessment: { type: "string" },
+      verificationQuestion: { type: "string" },
+    },
+    required: [
+      "skill",
+      "evidenceLevel",
+      "confidence",
+      "resumeEvidence",
+      "assessment",
+      "verificationQuestion",
+    ],
+  };
+
+  const responseSchema = {
+    type: "object",
+    properties: {
+      overallSummary: { type: "string" },
+      assessedSkills: {
+        type: "array",
+        items: skillSchema,
+      },
+      skillsNeedingVerification: stringArray,
+      recommendations: stringArray,
+      limitation: { type: "string" },
+    },
+    required: [
+      "overallSummary",
+      "assessedSkills",
+      "skillsNeedingVerification",
+      "recommendations",
+      "limitation",
+    ],
+  };
+
+  return generateStructuredAnalysis(
+    `
+You are RoastHire AI Skill Evidence Reviewer.
+
+Check whether the skills claimed in the resume
+are supported by projects, experience, education
+or certifications.
+
+EVIDENCE LEVELS:
+
+- strong: Clear practical evidence.
+- moderate: Some relevant evidence.
+- limited: Skill is listed but has little explanation.
+- not_found: No supporting evidence in the resume.
+
+RULES:
+- Never accuse a candidate of lying.
+- Missing resume evidence does not prove lack of ability.
+- Use only actual resume evidence.
+- Do not invent examples.
+- Confidence measures the evidence assessment,
+  not whether the candidate is truthful.
+- Provide one verification question per skill.
+- Put limited and not_found skills into
+  skillsNeedingVerification.
+
+RESUME:
+${resumeText}
+`,
+    responseSchema
+  );
+}
+
+// =====================================================
+// 6. RECRUITER EYE-TRACKING SIMULATOR
+// =====================================================
+
+async function simulateRecruiterScan(resumeText) {
+  const scanItemSchema = {
+    type: "object",
+    properties: {
+      position: { type: "integer" },
+      section: { type: "string" },
+      attentionLevel: { type: "string" },
+      reason: { type: "string" },
+    },
+    required: [
+      "position",
+      "section",
+      "attentionLevel",
+      "reason",
+    ],
+  };
+
+  const responseSchema = {
+    type: "object",
+    properties: {
+      firstImpression: { type: "string" },
+      scanOrder: {
+        type: "array",
+        items: scanItemSchema,
+      },
+      likelyHighlights: stringArray,
+      potentiallyOverlooked: stringArray,
+      readabilityIssues: stringArray,
+      quickImprovements: stringArray,
+      simulationDisclaimer: { type: "string" },
+    },
+    required: [
+      "firstImpression",
+      "scanOrder",
+      "likelyHighlights",
+      "potentiallyOverlooked",
+      "readabilityIssues",
+      "quickImprovements",
+      "simulationDisclaimer",
+    ],
+  };
+
+  return generateStructuredAnalysis(
+    `
+You are RoastHire AI Recruiter First-Pass Simulator.
+
+Simulate a plausible recruiter review of the resume.
+
+Analyze:
+- Likely reading order
+- Important sections
+- Strong information
+- Information that could be overlooked
+- Unclear descriptions
+- Quick improvements
+
+Attention levels:
+high, medium, low.
+
+IMPORTANT:
+- This is a text-based heuristic simulation.
+- Do not claim to measure actual eye movements.
+- Do not invent gaze coordinates or fixation time.
+- Do not guess visual layout, font sizes or colors.
+- Use only information available in extracted resume text.
+
+RESUME:
+${resumeText}
+`,
+    responseSchema
+  );
+}
+
+// =====================================================
+// 7. SKILL PROOF MAP
+// =====================================================
+
+async function buildSkillProofMap(resumeText) {
+  const skillSchema = {
+    type: "object",
+    properties: {
+      skill: { type: "string" },
+
+      category: { type: "string" },
+
+      evidenceLevel: {
+        type: "string",
+        description: "strong, moderate, limited, or not_found",
+      },
+
+      confidence: {
+        type: "integer",
+        description: "Confidence in evidence classification from 0 to 100",
+      },
+
+      evidenceSections: stringArray,
+
+      evidenceSnippets: stringArray,
+
+      explanation: { type: "string" },
+
+      proofSuggestion: { type: "string" },
+
+      interviewQuestion: { type: "string" },
+    },
+
+    required: [
+      "skill",
+      "category",
+      "evidenceLevel",
+      "confidence",
+      "evidenceSections",
+      "evidenceSnippets",
+      "explanation",
+      "proofSuggestion",
+      "interviewQuestion",
+    ],
+  };
+
+  const responseSchema = {
+    type: "object",
+
+    properties: {
+      overallEvidenceScore: {
+        type: "integer",
+        description: "Evidence coverage score from 0 to 100",
+      },
+
+      overallSummary: { type: "string" },
+
+      skills: {
+        type: "array",
+        items: skillSchema,
+      },
+
+      keyObservations: stringArray,
+
+      recommendedActions: stringArray,
+
+      limitation: { type: "string" },
+    },
+
+    required: [
+      "overallEvidenceScore",
+      "overallSummary",
+      "skills",
+      "keyObservations",
+      "recommendedActions",
+      "limitation",
+    ],
+  };
+
+  return generateStructuredAnalysis(
+    `
+You are RoastHire AI Skill Proof Mapper.
+
+Your task is to connect every claimed skill
+to actual evidence in the candidate's resume.
+
+CORE PURPOSE:
+
+Create a skill evidence map that connects
+technical skills and other claimed abilities to:
+
+- Projects
+- Work experience
+- Internships
+- Education
+- Certifications
+- Other resume sections
+
+EVIDENCE LEVELS:
+
+1. strong
+A concrete project or experience demonstrates
+the candidate applying the skill.
+
+2. moderate
+There is relevant evidence, but the depth
+or individual contribution is not completely clear.
+
+3. limited
+The skill is listed, but supporting details
+are weak or missing.
+
+4. not_found
+The skill is claimed, but no supporting example
+appears elsewhere in the resume.
+
+STRICT RULES:
+
+- Use ONLY information present in the resume.
+- Never invent projects, tools, responsibilities,
+  achievements or metrics.
+- Include only skills claimed by the candidate.
+- Do not add unrelated skills.
+- Never call a skill fake.
+- not_found does not mean the candidate
+  lacks that skill.
+- Confidence represents confidence in the
+  evidence classification, not real-world ability.
+- Evidence snippets must be actual short excerpts
+  or faithful references to resume content.
+- Never create fake quotations.
+- Return an empty evidenceSnippets array
+  when no evidence is found.
+- Include only sections actually represented
+  in the resume.
+
+CATEGORY EXAMPLES:
+
+Programming Language
+Framework
+Database
+Development Tool
+Cloud
+AI/ML
+Soft Skill
+Other
+
+PROOF SUGGESTIONS:
+
+Suggest practical ways to improve the evidence.
+
+Examples:
+- Explain how the skill was used in a project.
+- Describe the candidate's actual contribution.
+- Add a real GitHub repository link.
+- Include a relevant course project.
+- Add a measurable result only if verified.
+
+INTERVIEW QUESTION:
+
+Provide one useful technical question
+for each skill to help the candidate
+demonstrate their understanding.
+
+OVERALL EVIDENCE SCORE:
+
+Return a score between 0 and 100.
+
+This score measures resume evidence coverage,
+NOT the candidate's actual technical ability.
+
+If no claimed skills can be identified,
+return an empty skills array and explain why.
+
+RESUME:
+${resumeText}
+`,
+    responseSchema
+  );
+}
+
+// =====================================================
+// EXPORT ALL FUNCTIONS
+// =====================================================
+
 module.exports = {
-    analyzeResume,
-    roastResume, 
-    matchJob,
+  analyzeResume,
+  roastResume,
+  matchJob,
+  analyzeProjectStrength,
+  detectUnsupportedSkills,
+  simulateRecruiterScan,
+  buildSkillProofMap,
 };

@@ -15,4 +15,10 @@ router.post("/roast",
     verifyToken, 
     upload.single("resume"), 
     roastResumeController);
+
+    router.post(
+  "/skill-proof-map",
+  verifyToken,
+  uploadResume.buildSkillProofMap
+);
 module.exports = router;

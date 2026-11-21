@@ -30,8 +30,12 @@ function Login({ onLogin, onSwitchToRegister }) {
       }
 
       localStorage.setItem("token", data.token);
-
-      onLogin(data);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+      
+      onLogin(data.user);
     } catch (error) {
       console.error("LOGIN ERROR:", error);
       alert("Unable to connect to server.");

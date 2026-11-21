@@ -33,7 +33,7 @@ function RoastMode({ onBack, resume }) {
       formData.append("roastLevel", roastLevel);
 
       const response = await fetch(
-        "http://localhost:3000/api/resume/roast",
+        `${import.meta.env.VITE_API_URL}/api/resume/roast`,
         {
           method: "POST",
 

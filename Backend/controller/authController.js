@@ -39,16 +39,25 @@ async function registerUser(req, res) {
     });
   }
 }
+
 async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(401).json({
-        message: "invalid email or password",
+        success: false,
+        message: "Invalid email or password",
       });
     }
-    const isMatch = await bcrypt.compare(password, user.password);
+
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
+
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -63,18 +72,33 @@ async function loginUser(req, res) {
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
-      },
+      }
     );
 
     return res.status(200).json({
       success: true,
-      message: "Login Successful",
+      message: "Login successful",
       token,
+
+      // Send safe user information to the frontend.
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role || "candidate",
+        hiringTeamVerified:
+          user.hiringTeamVerified === true,
+      },
     });
 
-    
   } catch (error) {
-    console.error(error);
+    console.error("LOGIN ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 }
+
 module.exports = {registerUser, loginUser};

@@ -1,0 +1,674 @@
+
+/* =====================================================
+   ROASTHIRE AI — OBSIDIAN LUXE DESIGN SYSTEM
+   Theme: Premium Obsidian
+   Motion: Cinematic
+===================================================== */
+
+:root {
+  /* Backgrounds */
+  --rh-bg: #08070d;
+  --rh-bg-soft: #0d0b14;
+  --rh-surface: #12101b;
+  --rh-surface-raised: #191623;
+  --rh-surface-hover: #201c2c;
+
+  /* Purple palette */
+  --rh-purple: #9b6cff;
+  --rh-purple-bright: #b18aff;
+  --rh-purple-light: #d4c1ff;
+  --rh-purple-dark: #7041c8;
+
+  /* Accent gradients */
+  --rh-gradient: linear-gradient(
+    115deg,
+    #8050e9 0%,
+    #a16af5 48%,
+    #c18bff 100%
+  );
+
+  --rh-gradient-soft: linear-gradient(
+    140deg,
+    rgba(155, 108, 255, 0.17),
+    rgba(155, 108, 255, 0.025)
+  );
+
+  /* Text */
+  --rh-text: #f7f4ff;
+  --rh-text-secondary: #aaa3b9;
+  --rh-text-muted: #777184;
+  --rh-text-faint: #514b60;
+
+  /* Borders */
+  --rh-border: rgba(255, 255, 255, 0.075);
+  --rh-border-hover: rgba(177, 138, 255, 0.35);
+  --rh-border-strong: rgba(177, 138, 255, 0.2);
+
+  /* Semantic colors */
+  --rh-success: #6ee7b7;
+  --rh-warning: #fcd34d;
+  --rh-danger: #fda4af;
+  --rh-info: #93c5fd;
+
+  /* Shadows */
+  --rh-shadow-sm:
+    0 5px 18px rgba(0, 0, 0, 0.2);
+
+  --rh-shadow-md:
+    0 15px 40px rgba(0, 0, 0, 0.28);
+
+  --rh-shadow-lg:
+    0 30px 80px rgba(0, 0, 0, 0.4);
+
+  --rh-shadow-purple:
+    0 12px 35px rgba(139, 92, 246, 0.19);
+
+  /* Glass */
+  --rh-glass:
+    rgba(255, 255, 255, 0.035);
+
+  --rh-glass-strong:
+    rgba(255, 255, 255, 0.06);
+
+  /* Radius */
+  --rh-radius-sm: 10px;
+  --rh-radius-md: 16px;
+  --rh-radius-lg: 22px;
+  --rh-radius-xl: 30px;
+  --rh-radius-full: 999px;
+
+  /* Layout */
+  --rh-container: 1280px;
+  --rh-nav-height: 78px;
+
+  /* Motion */
+  --rh-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --rh-transition:
+    260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* =====================================================
+   GLOBAL RESET
+===================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+
+  color: var(--rh-text);
+  background: var(--rh-bg);
+
+  font-family:
+    Inter,
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  color: white;
+  background: rgba(155, 108, 255, 0.4);
+}
+
+
+/* =====================================================
+   AMBIENT BACKGROUND
+===================================================== */
+
+body::before {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+  z-index: -1;
+
+  background:
+    radial-gradient(
+      ellipse at 15% 5%,
+      rgba(117, 71, 204, 0.12),
+      transparent 36%
+    ),
+    radial-gradient(
+      ellipse at 90% 35%,
+      rgba(97, 52, 166, 0.08),
+      transparent 35%
+    ),
+    linear-gradient(
+      180deg,
+      #08070d,
+      #0a0810 55%,
+      #08070d
+    );
+}
+
+
+/* =====================================================
+   TYPOGRAPHY
+===================================================== */
+
+h1,
+h2,
+h3,
+h4,
+p {
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--rh-text);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+p {
+  color: var(--rh-text-secondary);
+}
+
+.eyebrow,
+.hero-badge,
+.auth-badge {
+  color: var(--rh-purple-bright);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+
+/* =====================================================
+   SHARED BUTTON INTERACTIONS
+===================================================== */
+
+.primary-btn,
+.secondary-btn,
+.file-btn,
+.nav-signup,
+.roast-btn,
+.start-roast-btn,
+.job-analyze-btn,
+.hiring-submit-btn,
+.candidate-search-btn,
+.candidate-apply-btn {
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform var(--rh-transition),
+    box-shadow var(--rh-transition),
+    border-color var(--rh-transition),
+    filter var(--rh-transition);
+}
+
+.primary-btn,
+.nav-signup,
+.hiring-submit-btn,
+.candidate-search-btn,
+.candidate-apply-btn {
+  background: var(--rh-gradient);
+  color: white;
+
+  box-shadow: var(--rh-shadow-purple);
+}
+
+.primary-btn:hover:not(:disabled),
+.nav-signup:hover,
+.hiring-submit-btn:hover:not(:disabled),
+.candidate-search-btn:hover:not(:disabled),
+.candidate-apply-btn:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 17px 40px rgba(139, 92, 246, 0.28);
+}
+
+.secondary-btn:hover,
+.file-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--rh-border-hover);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+
+/* Button shine */
+
+.primary-btn::after,
+.nav-signup::after,
+.hiring-submit-btn::after {
+  content: "";
+
+  position: absolute;
+  top: -100%;
+  left: -120%;
+
+  width: 50%;
+  height: 300%;
+
+  transform: rotate(25deg);
+
+  background: rgba(255, 255, 255, 0.2);
+
+  transition: left 650ms var(--rh-ease);
+  pointer-events: none;
+}
+
+.primary-btn:hover::after,
+.nav-signup:hover::after,
+.hiring-submit-btn:hover::after {
+  left: 150%;
+}
+
+
+/* =====================================================
+   SHARED GLASS SURFACES
+===================================================== */
+
+.upload-card,
+.feature-card,
+.analysis-result,
+.analysis-section,
+.score-card,
+.auth-card,
+.roast-settings,
+.roast-result,
+.job-input-card,
+.job-result-card,
+.job-score-card,
+.candidate-search-card,
+.candidate-job-card,
+.hiring-form-card,
+.hiring-my-jobs,
+.hiring-stat-card {
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.feature-card,
+.score-card,
+.candidate-job-card,
+.job-result-card,
+.hiring-stat-card {
+  transition:
+    transform var(--rh-transition),
+    border-color var(--rh-transition),
+    background var(--rh-transition),
+    box-shadow var(--rh-transition);
+}
+
+.feature-card:hover,
+.score-card:hover,
+.candidate-job-card:hover,
+.job-result-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--rh-border-hover);
+  box-shadow: var(--rh-shadow-md);
+}
+
+
+/* =====================================================
+   CINEMATIC MOTION SYSTEM
+===================================================== */
+
+@keyframes rh-cinematic-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes rh-cinematic-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.965) translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes rh-ambient-float {
+  0% {
+    transform: translate(-3%, -2%) scale(0.95);
+  }
+
+  50% {
+    transform: translate(3%, 2%) scale(1.06);
+  }
+
+  100% {
+    transform: translate(-1%, 3%) scale(1);
+  }
+}
+
+@keyframes rh-light-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes rh-shimmer {
+  from {
+    background-position: 200% center;
+  }
+
+  to {
+    background-position: -200% center;
+  }
+}
+
+/* Page entrances */
+
+.hero,
+.auth-card,
+.dashboard-top,
+.upload-card,
+.feature-grid,
+.analysis-result,
+.roast-hero,
+.roast-settings,
+.roast-result,
+.job-matching-hero,
+.job-input-card,
+.job-results,
+.candidate-jobs-hero,
+.candidate-search-card,
+.candidate-results,
+.hiring-header,
+.hiring-form-card,
+.hiring-my-jobs {
+  animation:
+    rh-cinematic-rise 850ms var(--rh-ease) both;
+}
+
+/* Staggered cards */
+
+.feature-card:nth-child(1),
+.candidate-job-card:nth-child(1) {
+  animation-delay: 80ms;
+}
+
+.feature-card:nth-child(2),
+.candidate-job-card:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.feature-card:nth-child(3),
+.candidate-job-card:nth-child(3) {
+  animation-delay: 220ms;
+}
+
+.feature-card:nth-child(4),
+.candidate-job-card:nth-child(4) {
+  animation-delay: 290ms;
+}
+
+/* Hero ambient light */
+
+.hero::before {
+  animation:
+    rh-ambient-float 16s ease-in-out infinite alternate;
+}
+
+
+/* =====================================================
+   INPUT FOCUS
+===================================================== */
+
+input,
+textarea,
+select {
+  transition:
+    border-color var(--rh-transition),
+    box-shadow var(--rh-transition),
+    background var(--rh-transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--rh-purple-bright);
+  outline-offset: 4px;
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090811;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #38284f;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7654a9;
+}
+
+
+/* =====================================================
+   MARKETING SECTIONS — HOME PAGE
+===================================================== */
+
+.home-section {
+  width: min(var(--rh-container), 90%);
+  margin: 0 auto;
+  padding: 105px 0;
+}
+
+.home-section-heading {
+  max-width: 740px;
+  margin: 0 auto 45px;
+  text-align: center;
+}
+
+.home-section-heading h2 {
+  margin: 15px 0;
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.1;
+}
+
+.home-section-heading p {
+  color: var(--rh-text-secondary);
+  line-height: 1.8;
+}
+
+.home-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.home-feature-card {
+  min-height: 210px;
+  padding: 26px;
+
+  border-radius: var(--rh-radius-lg);
+  border: 1px solid var(--rh-border);
+
+  background: var(--rh-glass);
+
+  transition: var(--rh-transition);
+}
+
+.home-feature-card:hover {
+  transform: translateY(-6px);
+  background: var(--rh-gradient-soft);
+  border-color: var(--rh-border-hover);
+}
+
+.home-feature-icon {
+  display: inline-grid;
+  place-items: center;
+
+  width: 45px;
+  height: 45px;
+  border-radius: 13px;
+
+  background: rgba(155, 108, 255, 0.14);
+  color: var(--rh-purple-light);
+
+  font-size: 21px;
+}
+
+.home-feature-card h3 {
+  margin: 21px 0 9px;
+  font-size: 17px;
+}
+
+.home-feature-card p {
+  margin: 0;
+  color: var(--rh-text-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.home-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.home-step-card {
+  padding: 28px;
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius-lg);
+  background: var(--rh-glass);
+}
+
+.home-step-number {
+  color: var(--rh-purple-bright);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 950px) {
+  .home-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --rh-nav-height: 70px;
+  }
+
+  .home-section {
+    width: calc(100% - 36px);
+    padding: 70px 0;
+  }
+
+  .home-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-section-heading {
+    margin-bottom: 28px;
+  }
+}
+
+
+/* =====================================================
+   ACCESSIBILITY — REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
