@@ -178,7 +178,6 @@ Never attack the person's identity or personal traits.
   }
 
   const response = await generateWithFallback({
-    model: MODEL_NAME,
 
     contents: `
 You are RoastHire AI Resume Roast Mode.
