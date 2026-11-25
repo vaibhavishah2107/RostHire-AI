@@ -2,10 +2,15 @@ const multer = require("multer");
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
   fileFilter: (req, file, cb) => {
-    if (file.mimetype !== "application/pdf") {
-      return cb(new Error("Only PDF files are allowed"));
+    const looksLikePdf =
+      file.mimetype === "application/pdf" ||
+      file.mimetype === "application/x-pdf" ||
+      file.originalname.toLowerCase().endsWith(".pdf");
+
+    if (!looksLikePdf) {
+      return cb(new Error("Please upload a PDF file."));
     }
     cb(null, true);
   },

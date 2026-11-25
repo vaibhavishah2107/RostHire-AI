@@ -1,6 +1,6 @@
 const { PDFParse } = require("pdf-parse");
 
-const { roastResume , isBusyError } = require("../services/ai.service");
+const { roastResume, isBusyError } = require("../services/ai.service");
 
 async function roastResumeController(req, res) {
     try {
@@ -35,6 +35,15 @@ async function roastResumeController(req, res) {
             .replace(/\n{2,}/g, "\n")
             .trim();
 
+        // Scanned or photo PDFs have no readable text
+        if (!text || text.length < 50) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Couldn't read text from this PDF. Please upload a text-based PDF, not a scan or photo.",
+            });
+        }
+
         // Send resume text to Gemini
         const roast = await roastResume(text, roastLevel);
 
@@ -44,7 +53,7 @@ async function roastResumeController(req, res) {
             roast,
         });
 
-       } catch (error) {
+    } catch (error) {
         console.error("ROAST ERROR:", error);
 
         if (isBusyError(error)) {

@@ -15,4 +15,21 @@ app.use("/api/auth",authRouter);
 app.use("/api/resume",resumeRouter);
 app.use("/api/job", jobRouter);
 app.use("/api/jobs", jobsRouter);
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      success: false,
+      message: "File is too large. Please upload a PDF under 10 MB.",
+    });
+  }
+
+  if (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message || "Upload failed.",
+    });
+  }
+
+  next();
+});
 module.exports = app;

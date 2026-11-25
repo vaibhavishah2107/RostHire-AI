@@ -31,6 +31,14 @@ async function uploadResume(req, res) {
       .map((line) => line.trim())
       .join("\n");
 
+    if (!cleanedText || cleanedText.length < 50) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Couldn't read text from this PDF. Please upload a text-based PDF, not a scan or photo.",
+  });
+}
+
     const savedResume = await Resume.create({
       userId: req.user.id,
       fileName: req.file.originalname,
