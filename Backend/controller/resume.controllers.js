@@ -2,6 +2,7 @@ const { PDFParse } = require("pdf-parse");
 const {
   analyzeResume,
   buildSkillProofMap,
+  isBusyError,
 } = require("../services/ai.service.js");
 const Resume = require("../models/resume");
 
@@ -45,13 +46,20 @@ async function uploadResume(req, res) {
       analysis: analysis,
     });
   } catch (error) {
-    console.log(error);
+  console.log(error);
 
-    return res.status(500).json({
+  if (isBusyError(error)) {
+    return res.status(503).json({
       success: false,
-      message: "Internal Server Error",
+      message: "Our AI is very busy right now. Please try again in a minute.",
     });
   }
+
+  return res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
+}
 }
 
 async function buildSkillProofMapController(req, res) {

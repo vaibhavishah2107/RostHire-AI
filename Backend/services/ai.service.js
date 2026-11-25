@@ -4,20 +4,67 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-const MODEL_NAME = "gemini-3.1-flash-lite";
+// Main model first, then an optional fallback (set both on Render)
+const MODELS = [
+  ...new Set(
+    [
+      process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
+      process.env.GEMINI_FALLBACK_MODEL,
+    ].filter(Boolean)
+  ),
+];
 
 const stringArray = {
   type: "array",
   items: { type: "string" },
 };
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// True for temporary problems: busy model, rate limit, network hiccup
+function isBusyError(err) {
+  const msg = String(err?.message || err).toLowerCase();
+  return (
+    [429, 500, 503, 504].includes(err?.status) ||
+    /overloaded|high demand|unavailable|resource_exhausted|rate limit|quota|timed out|fetch failed/.test(
+      msg
+    )
+  );
+}
+
+// Tries each model up to 3 times, with a short wait between attempts
+async function generateWithFallback(request) {
+  let lastError;
+
+  for (const model of MODELS) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await ai.models.generateContent({ ...request, model });
+      } catch (err) {
+        lastError = err;
+
+        if (!isBusyError(err)) throw err; // real error: don't retry
+
+        console.warn(
+          `Gemini busy (model ${model}, attempt ${attempt + 1}): ${err.message}`
+        );
+
+        if (attempt < 2) {
+          await sleep(1000 * 2 ** attempt + Math.random() * 500);
+        }
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 // =====================================================
 // COMMON GEMINI FUNCTION
 // =====================================================
 
 async function generateStructuredAnalysis(prompt, responseSchema) {
-  const response = await ai.models.generateContent({
-    model: MODEL_NAME,
+  const response = await generateWithFallback({
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -130,7 +177,7 @@ Never attack the person's identity or personal traits.
     throw new Error("Invalid roast level.");
   }
 
-  const response = await ai.models.generateContent({
+  const response = await generateWithFallback({
     model: MODEL_NAME,
 
     contents: `
@@ -672,4 +719,5 @@ module.exports = {
   detectUnsupportedSkills,
   simulateRecruiterScan,
   buildSkillProofMap,
+  isBusyError,
 };

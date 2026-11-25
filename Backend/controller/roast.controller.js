@@ -1,6 +1,6 @@
 const { PDFParse } = require("pdf-parse");
 
-const { roastResume } = require("../services/ai.service");
+const { roastResume , isBusyError } = require("../services/ai.service");
 
 async function roastResumeController(req, res) {
     try {
@@ -44,8 +44,15 @@ async function roastResumeController(req, res) {
             roast,
         });
 
-    } catch (error) {
+       } catch (error) {
         console.error("ROAST ERROR:", error);
+
+        if (isBusyError(error)) {
+            return res.status(503).json({
+                success: false,
+                message: "Our AI is very busy right now. Please try again in a minute.",
+            });
+        }
 
         return res.status(500).json({
             success: false,
