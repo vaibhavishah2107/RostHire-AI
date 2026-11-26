@@ -6,7 +6,7 @@ import Login from "./components/login";
 import Register from "./components/register";
 import ResumeUpload from "./components/resumeUpload";
 import HiringDashboard from "./components/HiringDashboard";
-
+import FireCursor from "./components/fireCursor";
 function getStoredUser() {
   try {
     const savedUser = localStorage.getItem("user");
@@ -90,9 +90,12 @@ function App() {
 
 
   return (
-    <div className="app-shell" id="top">
+  <div className="app-shell" id="top">
 
-      {/* GLOBAL NAVIGATION */}
+    {/* GLOBAL FIRE CURSOR */}
+    <FireCursor />
+
+    {/* GLOBAL NAVIGATION */}
 
       <Navbar
   onLogin={() => setPage("login")}
